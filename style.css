@@ -1,0 +1,218 @@
+body{
+
+margin:0;
+
+font-family:sans-serif;
+
+background:#EAF8F8;
+
+}
+
+.container{
+
+max-width:700px;
+
+margin:auto;
+
+padding:40px;
+
+text-align:center;
+
+}
+
+.hidden{
+
+display:none;
+
+}
+
+button{
+
+padding:15px 30px;
+
+margin:10px;
+
+font-size:18px;
+
+border:none;
+
+border-radius:10px;
+
+background:#1F9AA5;
+
+color:white;
+
+cursor:pointer;
+
+}
+
+button:hover{
+
+background:#177982;
+
+}
+
+.card{
+
+background:white;
+
+padding:40px;
+
+border-radius:20px;
+
+box-shadow:0 5px 20px rgba(0,0,0,.2);
+
+margin:30px 0;
+
+}
+
+.card h2{
+
+color:#1F9AA5;
+
+font-size:30px;
+
+}
+
+.card p{
+
+font-size:24px;
+
+line-height:1.7;
+
+}
+
+.progress-area {
+  background: white;
+  padding: 20px;
+  margin: 25px 0;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.progress-title {
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #177982;
+}
+
+#progressCount {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 22px;
+  background: #d9eeee;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+#progressFill {
+  width: 0%;
+  height: 100%;
+  background: #1f9aa5;
+  transition: width 0.4s ease;
+}
+
+#nextReward {
+  margin-top: 12px;
+  font-weight: bold;
+  color: #177982;
+}
+
+#albumList {
+  margin: 25px 0;
+}
+
+.album-card {
+  background: white;
+  padding: 20px;
+  margin-bottom: 18px;
+  border-radius: 15px;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.album-card h2 {
+  margin: 8px 0;
+  color: #177982;
+}
+
+.album-card p {
+  line-height: 1.6;
+}
+
+.album-card.completed {
+  border-left: 8px solid #1f9aa5;
+}
+
+.album-card.challenging {
+  border-left: 8px solid #e3b341;
+}
+
+.album-status {
+  font-weight: bold;
+}
+
+.empty-message {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+}
+
+.reward-box {
+  background: white;
+  padding: 35px 25px;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.reward-icon {
+  font-size: 70px;
+  margin-bottom: 10px;
+}
+
+.reward-box h1 {
+  color: #177982;
+  font-size: 32px;
+}
+
+#rewardMessage {
+  font-size: 22px;
+  font-weight: bold;
+  line-height: 1.6;
+}
+
+.reward-note {
+  background: #eaf8f8;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+  font-weight: bold;
+}
+
+#playTitle {
+  color: #177982;
+  font-size: 28px;
+  margin-bottom: 15px;
+}
+
+.album-card button {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.reset-button {
+  margin-top: 20px;
+  background: transparent;
+  color: #b54444;
+  border: 2px solid #b54444;
+}
+
+.reset-button:hover {
+  background: #b54444;
+  color: white;
+}

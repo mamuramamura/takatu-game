@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大山街道魅力発見カードゲーム</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- トップ画面 -->
+<section id="home">
+
+<h1>大山街道魅力発見カードゲーム</h1>
+
+<p>
+カードを引いて、実際に街を歩いてみよう！
+</p>
+
+<div class="progress-area">
+
+  <p class="progress-title">現在の達成状況</p>
+
+  <p id="progressCount">0 / 10 達成</p>
+
+  <div class="progress-bar">
+    <div id="progressFill"></div>
+  </div>
+
+  <p id="nextReward">
+    あと3枚で最初の特典！
+  </p>
+
+</div>
+
+<button onclick="startGame()">
+ゲーム開始
+</button>
+
+<button onclick="showAlbum()">
+  引いたカードを見る
+</button>
+
+<button class="reset-button" onclick="resetGameData()">
+  進捗をリセット
+</button>
+
+</section>
+
+<!-- カード画面 -->
+<section id="game" class="hidden">
+
+<div class="card">
+
+<h2 id="title"></h2>
+
+<p id="text"></p>
+
+</div>
+
+<div class="buttons">
+
+<button onclick="drawCard()">
+もう一枚引く
+</button>
+
+<button onclick="playCard()">
+このカードで遊ぶ
+</button>
+
+</div>
+
+</section>
+
+<!-- 行動画面 -->
+
+<section id="play" class="hidden">
+
+  <h1>このお題に挑戦！</h1>
+
+  <h2 id="playTitle"></h2>
+
+  <p id="playText"></p>
+
+  <button onclick="completeCard()">
+    達成！
+  </button>
+
+  <button onclick="showAlbum()">
+    カード一覧へ戻る
+  </button>
+
+</section>
+
+<!-- 達成画面 -->
+
+<section id="complete" class="hidden">
+
+<h1>🎉 おめでとうございます！</h1>
+
+<p>
+
+カードを達成しました！
+
+</p>
+
+<button onclick="openForm()">
+  証拠提出はこちら
+</button>
+
+<br><br>
+
+<button onclick="goHome()">
+
+トップへ戻る
+
+</button>
+
+</section>
+
+<!-- カードアルバム画面 -->
+<section id="album" class="hidden">
+
+  <h1>引いたカード</h1>
+
+  <p>
+    まだ引いていないカードは表示されません。
+  </p>
+
+  <div id="albumList"></div>
+
+  <button onclick="goHome()">
+    トップへ戻る
+  </button>
+
+</section>
+
+<!-- ↓ここに追加 -->
+<section id="reward" class="hidden">
+
+  <div class="reward-box">
+
+    <div class="reward-icon">🎁</div>
+
+    <h1 id="rewardTitle">
+      特典達成！
+    </h1>
+
+    <p id="rewardMessage">
+      おめでとうございます！
+    </p>
+
+    <p class="reward-note">
+      受付でこの画面を見せてください。
+    </p>
+
+    <button onclick="openForm()">
+      証拠を提出する
+    </button>
+
+    <button onclick="goHome()">
+      トップへ戻る
+    </button>
+
+  </div>
+
+</section>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
