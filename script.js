@@ -1,70 +1,25 @@
-const cards = [
-  {
-    id: 1,
-    title: "居酒屋",
-    text: "〇〇という居酒屋へ行ってみよう"
-  },
-  {
-    id: 2,
-    title: "居酒屋",
-    text: "△△という居酒屋へ行ってみよう"
-  },
-  {
-    id: 3,
-    title: "神社",
-    text: "〇〇神社へお参りしてみよう"
-  },
-  {
-    id: 4,
-    title: "展示",
-    text: "ふるさと館へ行って展示を見よう"
-  },
-  {
-    id: 5,
-    title: "街歩き",
-    text: "溝の口駅から二子新地駅まで歩いてみよう"
-  },
-  {
-    id: 6,
-    title: "多摩川",
-    text: "多摩川を渡ってみよう"
-  },
-  {
-    id: 7,
-    title: "歴史",
-    text: "昔の街道の痕跡を探そう"
-  },
-  {
-    id: 8,
-    title: "休憩",
-    text: "街道で休憩できる場所を探そう"
-  },
-  {
-    id: 9,
-    title: "遊び場",
-    text: "子どもの遊び場を探そう"
-  },
-  {
-    id: 10,
-    title: "犬目線",
-    text: "犬の視点で街を歩いてみよう"
-  }
-];
-
 const FORM_URL = "https://forms.google.com/";
 
 // Local Storageで使用する名前
 const STORAGE_KEY = "oyamakaidoCardGameData";
 
 // 保存データの初期状態
-let gameData = {
-  drawnCards: [],
-  completedCards: [],
-  currentCardId: null,
-  unlockedRewards: []
-};
+let gameData = createInitialGameData();
 
+// 現在選択しているカード
 let currentCard = null;
+
+/**
+ * 初期状態のゲームデータを作る
+ */
+function createInitialGameData() {
+  return {
+    drawnCards: [],
+    completedCards: [],
+    currentCardId: null,
+    unlockedRewards: []
+  };
+}
 
 /**
  * Local Storageからデータを読み込む
@@ -79,32 +34,59 @@ function loadGameData() {
   try {
     const parsedData = JSON.parse(savedData);
 
-   gameData = {
-  drawnCards: Array.isArray(parsedData.drawnCards)
-    ? parsedData.drawnCards
-    : [],
+    // 現在存在するカードのID
+    const existingCardIds = cards.map((card) => card.id);
 
-  completedCards: Array.isArray(parsedData.completedCards)
-    ? parsedData.completedCards
-    : [],
+    // 現在存在する特典の達成枚数
+    const existingRewardCounts = rewards.map(
+      (reward) => reward.count
+    );
 
-  currentCardId: parsedData.currentCardId ?? null,
+    gameData = {
+      drawnCards: Array.isArray(parsedData.drawnCards)
+        ? parsedData.drawnCards.filter((cardId) =>
+            existingCardIds.includes(cardId)
+          )
+        : [],
 
-  unlockedRewards: Array.isArray(parsedData.unlockedRewards)
-    ? parsedData.unlockedRewards
-    : []
-};
+      completedCards: Array.isArray(
+        parsedData.completedCards
+      )
+        ? parsedData.completedCards.filter((cardId) =>
+            existingCardIds.includes(cardId)
+          )
+        : [],
 
-    // 保存されていた挑戦中カードを復元
+      currentCardId:
+        parsedData.currentCardId !== null &&
+        existingCardIds.includes(parsedData.currentCardId)
+          ? parsedData.currentCardId
+          : null,
+
+      unlockedRewards: Array.isArray(
+        parsedData.unlockedRewards
+      )
+        ? parsedData.unlockedRewards.filter((count) =>
+            existingRewardCounts.includes(count)
+          )
+        : []
+    };
+
+    // 保存されていた挑戦中カードを復元する
     if (gameData.currentCardId !== null) {
       currentCard =
-        cards.find((card) => card.id === gameData.currentCardId) ?? null;
+        cards.find(
+          (card) => card.id === gameData.currentCardId
+        ) ?? null;
     }
   } catch (error) {
-    console.error("保存データの読み込みに失敗しました。", error);
+    console.error(
+      "保存データの読み込みに失敗しました。",
+      error
+    );
 
-    // 壊れた保存データを削除
     localStorage.removeItem(STORAGE_KEY);
+    gameData = createInitialGameData();
   }
 }
 
@@ -112,36 +94,55 @@ function loadGameData() {
  * 現在のデータをLocal Storageに保存する
  */
 function saveGameData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData));
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(gameData)
+  );
 }
 
 /**
  * 指定した画面だけを表示する
  */
 function show(id) {
-  document.querySelectorAll("section").forEach((section) => {
-    section.classList.add("hidden");
-  });
+  document
+    .querySelectorAll("section")
+    .forEach((section) => {
+      section.classList.add("hidden");
+    });
 
-  document.getElementById(id).classList.remove("hidden");
+  const targetSection = document.getElementById(id);
+
+  if (!targetSection) {
+    console.error(`${id}という画面が見つかりません。`);
+    return;
+  }
+
+  targetSection.classList.remove("hidden");
 }
 
 /**
  * ゲーム開始
  */
 function startGame() {
-  drawCard();
-  show("game");
+  const cardWasDrawn = drawCard();
+
+  if (cardWasDrawn) {
+    show("game");
+  }
 }
 
 /**
  * トップ画面の進捗を更新する
  */
 function updateProgress() {
-  const completedCount = gameData.completedCards.length;
+  const completedCount =
+    gameData.completedCards.length;
+
   const totalCount = cards.length;
 
-  document.getElementById("progressCount").innerText =
+  document.getElementById(
+    "progressCount"
+  ).innerText =
     `${completedCount} / ${totalCount} 達成`;
 
   const progressPercent =
@@ -149,10 +150,13 @@ function updateProgress() {
       ? 0
       : (completedCount / totalCount) * 100;
 
-  document.getElementById("progressFill").style.width =
-    `${progressPercent}%`;
+  document.getElementById(
+    "progressFill"
+  ).style.width = `${progressPercent}%`;
 
-  document.getElementById("nextReward").innerText =
+  document.getElementById(
+    "nextReward"
+  ).innerText =
     getNextRewardMessage(completedCount);
 }
 
@@ -160,26 +164,42 @@ function updateProgress() {
  * 次の特典までの案内文を作る
  */
 function getNextRewardMessage(completedCount) {
-  if (completedCount < 3) {
-    return `あと${3 - completedCount}枚で3枚達成特典！`;
+  // 全カードを達成した場合
+  if (completedCount >= cards.length) {
+    return "全カード達成！おめでとうございます！";
   }
 
-  if (completedCount < 5) {
-    return `あと${5 - completedCount}枚で5枚達成特典！`;
+  // 特典を達成枚数順に並べる
+  const sortedRewards = [...rewards].sort(
+    (a, b) => a.count - b.count
+  );
+
+  // 次に獲得できる特典を探す
+  const nextReward = sortedRewards.find(
+    (reward) => reward.count > completedCount
+  );
+
+  // まだ特典が残っている場合
+  if (nextReward) {
+    const remaining =
+      nextReward.count - completedCount;
+
+    return `あと${remaining}枚で${nextReward.count}枚達成特典！`;
   }
 
-  if (completedCount < 10) {
-    return `あと${10 - completedCount}枚で10枚達成特典！`;
-  }
+  // 特典はすべて獲得済みだがカードが残っている場合
+  const remainingCards =
+    cards.length - completedCount;
 
-  return "全カード達成！おめでとうございます！";
+  return `すべての特典を獲得済み！全カード達成まであと${remainingCards}枚`;
 }
 
 /**
  * 引いたカードだけをアルバムに表示する
  */
 function showAlbum() {
-  const albumList = document.getElementById("albumList");
+  const albumList =
+    document.getElementById("albumList");
 
   albumList.innerHTML = "";
 
@@ -195,7 +215,9 @@ function showAlbum() {
   }
 
   gameData.drawnCards.forEach((cardId) => {
-    const card = cards.find((item) => item.id === cardId);
+    const card = cards.find(
+      (item) => item.id === cardId
+    );
 
     if (!card) {
       return;
@@ -204,7 +226,8 @@ function showAlbum() {
     const isCompleted =
       gameData.completedCards.includes(card.id);
 
-    const albumCard = document.createElement("div");
+    const albumCard =
+      document.createElement("div");
 
     albumCard.classList.add("album-card");
 
@@ -215,24 +238,30 @@ function showAlbum() {
     }
 
     albumCard.innerHTML = `
-  <div class="album-status">
-    ${isCompleted ? "✅ 達成済み" : "🟨 未達成"}
-  </div>
+      <div class="album-status">
+        ${
+          isCompleted
+            ? "✅ 達成済み"
+            : "🟨 未達成"
+        }
+      </div>
 
-  <h2>${card.title}</h2>
+      <h2>${card.title}</h2>
 
-  <p>${card.text}</p>
+      <p>${card.text}</p>
 
-  ${
-    isCompleted
-      ? ""
-      : `
-        <button onclick="selectCardFromAlbum(${card.id})">
-          このカードを選ぶ
-        </button>
-      `
-  }
-`;
+      ${
+        isCompleted
+          ? ""
+          : `
+            <button
+              onclick="selectCardFromAlbum(${card.id})"
+            >
+              このカードを選ぶ
+            </button>
+          `
+      }
+    `;
 
     albumList.appendChild(albumCard);
   });
@@ -244,9 +273,9 @@ function showAlbum() {
  * アルバムから未達成カードを選ぶ
  */
 function selectCardFromAlbum(cardId) {
-  const selectedCard = cards.find((card) => {
-    return card.id === cardId;
-  });
+  const selectedCard = cards.find(
+    (card) => card.id === cardId
+  );
 
   if (!selectedCard) {
     alert("カードが見つかりませんでした。");
@@ -262,57 +291,68 @@ function selectCardFromAlbum(cardId) {
   }
 
   const isCompleted =
-    gameData.completedCards.includes(selectedCard.id);
+    gameData.completedCards.includes(
+      selectedCard.id
+    );
 
   if (isCompleted) {
-    alert("このカードはすでに達成済みです。");
+    alert(
+      "このカードはすでに達成済みです。"
+    );
     return;
   }
 
   currentCard = selectedCard;
-  gameData.currentCardId = selectedCard.id;
-
-  saveGameData();
-
-  document.getElementById("playText").innerText =
-    selectedCard.text;
-
-  show("play");
+  playCard();
 }
 
 /**
- * まだ引いていないカードからランダムに1枚引く
+ * まだ引いていないカードから
+ * ランダムに1枚引く
+ *
+ * 成功した場合はtrue、
+ * 引けなかった場合はfalseを返す
  */
 function drawCard() {
-  const availableCards = cards.filter((card) => {
-    return !gameData.drawnCards.includes(card.id);
-  });
+  const availableCards = cards.filter(
+    (card) =>
+      !gameData.drawnCards.includes(card.id)
+  );
 
   if (availableCards.length === 0) {
-    alert("すべてのカードを引きました！");
+    alert(
+      "すべてのカードを引きました！\n未達成カードはカード一覧から選べます。"
+    );
+
     goHome();
-    return;
+    return false;
   }
 
   const randomIndex = Math.floor(
     Math.random() * availableCards.length
   );
 
-  currentCard = availableCards[randomIndex];
+  currentCard =
+    availableCards[randomIndex];
 
-  // 引いたカードとして記録
+  // 引いたカードとして記録する
   gameData.drawnCards.push(currentCard.id);
 
-  // 現在挑戦中のカードとして記録
-  gameData.currentCardId = currentCard.id;
+  // 現在挑戦中のカードとして記録する
+  gameData.currentCardId =
+    currentCard.id;
 
   saveGameData();
 
-  document.getElementById("title").innerText =
-    currentCard.title;
+  document.getElementById(
+    "title"
+  ).innerText = currentCard.title;
 
-  document.getElementById("text").innerText =
-    currentCard.text;
+  document.getElementById(
+    "text"
+  ).innerText = currentCard.text;
+
+  return true;
 }
 
 /**
@@ -320,20 +360,47 @@ function drawCard() {
  */
 function playCard() {
   if (!currentCard) {
-    alert("先にカードを引いてください。");
+    alert(
+      "先にカードを引いてください。"
+    );
     return;
   }
 
-  gameData.currentCardId = currentCard.id;
+  gameData.currentCardId =
+    currentCard.id;
+
   saveGameData();
 
- document.getElementById("playTitle").innerText =
-  currentCard.title;
- 
-  document.getElementById("playText").innerText =
-    currentCard.text;
+  document.getElementById(
+    "playTitle"
+  ).innerText = currentCard.title;
+
+  document.getElementById(
+    "playText"
+  ).innerText = currentCard.text;
+
+  updateMapButton();
 
   show("play");
+}
+
+/**
+ * Googleマップボタンの
+ * 表示・非表示を切り替える
+ */
+function updateMapButton() {
+  const mapButton =
+    document.getElementById("mapButton");
+
+  if (!mapButton) {
+    return;
+  }
+
+  if (currentCard?.mapUrl) {
+    mapButton.style.display = "block";
+  } else {
+    mapButton.style.display = "none";
+  }
 }
 
 /**
@@ -341,16 +408,21 @@ function playCard() {
  */
 function completeCard() {
   if (!currentCard) {
-    alert("挑戦中のカードがありません。");
+    alert(
+      "挑戦中のカードがありません。"
+    );
     return;
   }
 
   const alreadyCompleted =
-    gameData.completedCards.includes(currentCard.id);
+    gameData.completedCards.includes(
+      currentCard.id
+    );
 
-  // 未達成の場合だけ追加
   if (!alreadyCompleted) {
-    gameData.completedCards.push(currentCard.id);
+    gameData.completedCards.push(
+      currentCard.id
+    );
   }
 
   gameData.currentCardId = null;
@@ -358,10 +430,9 @@ function completeCard() {
   saveGameData();
   updateProgress();
 
-  // 特典の判定
-  const unlockedReward = getUnlockedReward();
+  const unlockedReward =
+    getUnlockedReward();
 
-  // 選択状態の解除
   currentCard = null;
 
   if (unlockedReward) {
@@ -369,6 +440,55 @@ function completeCard() {
   } else {
     show("complete");
   }
+}
+
+/**
+ * 今回の達成で
+ * 新しい特典が解放されたか調べる
+ */
+function getUnlockedReward() {
+  const completedCount =
+    gameData.completedCards.length;
+
+  const reward = rewards.find(
+    (item) => item.count === completedCount
+  );
+
+  if (!reward) {
+    return null;
+  }
+
+  const alreadyUnlocked =
+    gameData.unlockedRewards.includes(
+      reward.count
+    );
+
+  if (alreadyUnlocked) {
+    return null;
+  }
+
+  gameData.unlockedRewards.push(
+    reward.count
+  );
+
+  saveGameData();
+
+  return reward;
+}
+
+/**
+ * 特典画面を表示する
+ */
+function showReward(reward) {
+  document.getElementById(
+    "rewardTitle"
+  ).innerText = reward.title;
+
+  document.getElementById(
+    "rewardMessage"
+  ).innerText = reward.message;
+
+  show("reward");
 }
 
 /**
@@ -393,13 +513,7 @@ function resetGameData() {
 
   localStorage.removeItem(STORAGE_KEY);
 
-  gameData = {
-    drawnCards: [],
-    completedCards: [],
-    currentCardId: null,
-    unlockedRewards: []
-  };
-
+  gameData = createInitialGameData();
   currentCard = null;
 
   updateProgress();
@@ -409,74 +523,43 @@ function resetGameData() {
 }
 
 /**
- * ページを開いたときに保存データを読み込む
- */
-loadGameData();
-updateProgress();
-
-const rewards = {
-  3: {
-    title: "3枚達成特典！",
-    message: "オリジナルステッカーをプレゼント！"
-  },
-
-  5: {
-    title: "5枚達成特典！",
-    message: "オリジナル缶バッジをプレゼント！"
-  },
-
-  10: {
-    title: "全カード達成！",
-    message: "コンプリート特典をプレゼント！"
-  }
-};
-
-/**
- * 今回の達成で新しい特典が解放されたか調べる
- */
-function getUnlockedReward() {
-  const completedCount = gameData.completedCards.length;
-
-  const reward = rewards[completedCount];
-
-  if (!reward) {
-    return null;
-  }
-
-  const alreadyUnlocked =
-    gameData.unlockedRewards.includes(completedCount);
-
-  if (alreadyUnlocked) {
-    return null;
-  }
-
-  gameData.unlockedRewards.push(completedCount);
-
-  saveGameData();
-
-  return {
-    count: completedCount,
-    title: reward.title,
-    message: reward.message
-  };
-}
-
-/**
- * 特典画面を表示する
- */
-function showReward(reward) {
-  document.getElementById("rewardTitle").innerText =
-    reward.title;
-
-  document.getElementById("rewardMessage").innerText =
-    reward.message;
-
-  show("reward");
-}
-
-/**
  * Google Formsを別タブで開く
  */
 function openForm() {
   window.open(FORM_URL, "_blank");
+}
+
+/**
+ * 現在のカードのGoogleマップを開く
+ */
+function openMap() {
+  if (!currentCard?.mapUrl) {
+    alert(
+      "このカードには地図が登録されていません。"
+    );
+    return;
+  }
+
+  window.open(
+    currentCard.mapUrl,
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
+/**
+ * ページを開いたときの初期処理
+ */
+function initializeGame() {
+  loadGameData();
+  updateProgress();
+}
+
+initializeGame();
+
+/**
+ * 遊び方画面を表示する
+ */
+function showHowToPlay() {
+  show("howToPlay");
 }
