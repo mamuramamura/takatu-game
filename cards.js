@@ -67,7 +67,9 @@ const cards = [
   {
     id: 11,
     title: "ちょっと遠出",
-    text: "久地円筒分水まで歩いてみよう"
+    text: "久地円筒分水まで歩いてみよう",
+    mapUrl:
+      "https://www.google.com/maps/search/?api=1&query=久地円筒分水"
   },
   {
     id: 12,
