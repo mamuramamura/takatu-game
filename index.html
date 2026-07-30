@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>めくる、めぐる。</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- トップ画面 -->
+<section id="home">
+
+<h1>めくる、めぐる。</h1>
+
+<p>
+カードを引いて、実際に街を歩いてみよう！
+</p>
+
+<div class="progress-area">
+
+  <p class="progress-title">現在の達成状況</p>
+
+  <p id="progressCount">0 / 15 達成</p>
+
+  <div class="progress-bar">
+    <div id="progressFill"></div>
+  </div>
+
+  <p id="nextReward">
+    あと5枚で最初の特典！
+  </p>
+
+</div>
+
+<button onclick="startGame()">
+ゲーム開始
+</button>
+
+<button onclick="showAlbum()">
+  引いたカードを見る
+</button>
+
+<button onclick="showHowToPlay()">
+  遊び方
+</button>
+
+<button class="reset-button" onclick="resetGameData()">
+  進捗をリセット
+</button>
+
+</section>
+
+<!-- カード画面 -->
+<section id="game" class="hidden">
+
+<div class="card">
+
+<h2 id="title"></h2>
+
+<p id="text"></p>
+
+</div>
+
+<div class="buttons">
+
+<button onclick="drawCard()">
+もう一枚引く
+</button>
+
+<button onclick="playCard()">
+このカードで遊ぶ
+</button>
+
+</div>
+
+</section>
+
+<!-- 行動画面 -->
+
+<section id="play" class="hidden">
+
+  <h1>このお題に挑戦！</h1>
+
+  <h2 id="playTitle"></h2>
+
+  <p id="playText"></p>
+
+   <button id="mapButton" onclick="openMap()">
+    Googleマップで場所を見る
+  </button>
+
+  <button onclick="completeCard()">
+    達成！
+  </button>
+
+  <button onclick="showAlbum()">
+    カード一覧へ戻る
+  </button>
+
+</section>
+
+<!-- 達成画面 -->
+
+<section id="complete" class="hidden">
+
+<h1>🎉 おめでとうございます！</h1>
+
+<p>
+
+カードを達成しました！
+
+</p>
+
+<button onclick="openForm()">
+  証拠提出はこちら
+</button>
+
+<br><br>
+
+<button onclick="showAlbum()">
+  引いたカード一覧
+</button>
+
+<br><br>
+
+<button onclick="goHome()">
+
+トップへ戻る
+
+</button>
+
+</section>
+
+<!-- カードアルバム画面 -->
+<section id="album" class="hidden">
+
+  <h1>引いたカード</h1>
+
+  <p>
+    まだ引いていないカードは表示されません。
+  </p>
+
+  <div id="albumList"></div>
+
+  <button onclick="goHome()">
+    トップへ戻る
+  </button>
+
+</section>
+
+<!-- ↓ここに追加 -->
+<section id="reward" class="hidden">
+
+  <div class="reward-box">
+
+    <div class="reward-icon">🎁</div>
+
+    <h1 id="rewardTitle">
+      特典達成！
+    </h1>
+
+    <p id="rewardMessage">
+      おめでとうございます！
+    </p>
+
+    <p class="reward-note">
+      受付でこの画面を見せてください。
+    </p>
+
+    <button onclick="openForm()">
+      証拠を提出する
+    </button>
+
+    <button onclick="showAlbum()">
+  引いたカード一覧
+</button>
+
+    <button onclick="goHome()">
+      トップへ戻る
+    </button>
+
+  </div>
+
+</section>
+
+<!-- 遊び方画面 -->
+<section id="howToPlay" class="hidden">
+
+  <h1>遊び方</h1>
+
+  <div class="how-to-play">
+
+    <div class="how-to-step">
+      <h2>1．カードを引こう</h2>
+      <p>
+        「ゲームを始める」ボタンを押すと、
+        まだ引いていないカードからランダムに1枚表示されます。
+      </p>
+    </div>
+
+    <div class="how-to-step">
+      <h2>2．お題に挑戦しよう</h2>
+      <p>
+        カードに書かれた場所を訪れたり、
+        街を歩きながらお題に挑戦したりしてみましょう。
+      </p>
+    </div>
+
+    <div class="how-to-step">
+      <h2>3．達成を記録しよう</h2>
+      <p>
+        お題を達成したら「達成」ボタンを押してください。
+        達成したカードは、引いたカード一覧で確認できます。
+      </p>
+    </div>
+
+    <div class="how-to-step">
+      <h2>4．証拠を提出しよう</h2>
+      <p>
+        必要に応じて、達成画面にある
+        「証拠提出はこちら」から写真や感想を送信してください。
+      </p>
+    </div>
+
+    <div class="how-to-step">
+      <h2>5．特典を獲得しよう</h2>
+      <p>
+        一定枚数のカードを達成すると、
+        特典獲得画面が表示されます。
+      </p>
+    </div>
+
+  </div>
+
+  <h2>注意事項</h2>
+
+  <ul class="caution-list">
+    <li>
+      歩きながらスマートフォンを操作しないでください。
+    </li>
+    <li>
+      信号や交通ルールを守って、安全に参加してください。
+    </li>
+    <li>
+      私有地や立入禁止区域には入らないでください。
+    </li>
+    <li>
+      店舗や施設、地域住民の迷惑になる行動は避けてください。
+    </li>
+    <li>
+      写真を撮る場合は、通行人の顔や車のナンバーなどが
+      写らないよう注意してください。
+    </li>
+    <li>
+      体調や天候に不安がある場合は、無理に参加しないでください。
+    </li>
+  </ul>
+
+  <p class="storage-note">
+    達成状況は、この端末のブラウザ内に保存されます。
+    別の端末やブラウザには引き継がれません。
+  </p>
+
+  <hr>
+
+<h2>このゲームについて</h2>
+
+<div class="info-item">
+    <h3>企画・制作</h3>
+    <p>國學院大學 観光まちづくり学部 米田ゼミ
+    </p>
+  </div>
+
+<div class="info-item">
+    <h3>制作目的</h3>
+    <p>あすLABO提案用資料の一貫として作成</p>
+  </div>
+
+  <button onclick="goHome()">
+    トップへ戻る
+  </button>
+
+</section>
+
+</div>
+
+<script src="cards.js"></script>
+<script src="rewards.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
